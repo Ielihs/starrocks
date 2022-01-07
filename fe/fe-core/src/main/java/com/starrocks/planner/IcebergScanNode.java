@@ -24,7 +24,9 @@ import com.starrocks.thrift.TScanRangeLocations;
 import org.apache.iceberg.DataFile;
 import org.apache.iceberg.FileScanTask;
 import org.apache.iceberg.Snapshot;
-import org.apache.iceberg.expressions.UnboundPredicate;
+import org.apache.iceberg.exceptions.ValidationException;
+import org.apache.iceberg.expressions.Binder;
+import org.apache.iceberg.expressions.Expression;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,7 +42,7 @@ public class IcebergScanNode extends ScanNode {
     private List<TScanRangeLocations> result = new ArrayList<>();
 
     // Exprs in icebergConjuncts converted to UnboundPredicate.
-    private final List<UnboundPredicate> icebergPredicates = new ArrayList<>();
+    private List<Expression> icebergPredicates = null;
 
     // List of conjuncts for min/max values that are used to skip data when scanning Parquet files.
     private final List<Expr> minMaxConjuncts = new ArrayList<>();
@@ -89,12 +91,21 @@ public class IcebergScanNode extends ScanNode {
      * please refer: https://iceberg.apache.org/spec/#scan-planning
      */
     private void preProcessConjuncts() {
+        List<Expression> expressions = new ArrayList<>(conjuncts.size());
         for (Expr expr : conjuncts) {
-            UnboundPredicate unboundPredicate = toIcebergExpression(expr);
-            if (unboundPredicate != null) {
-                icebergPredicates.add(unboundPredicate);
+            Expression filterExpr = toIcebergExpression(expr);
+            if (filterExpr != null) {
+                try {
+                    Binder.bind(srIcebergTable.getIcebergTable().schema().asStruct(), filterExpr, false);
+                    expressions.add(filterExpr);
+                } catch (ValidationException e) {
+                    // binding to the table schema failed, so this expression cannot be pushed down
+                }
             }
         }
+        LOG.debug("Number of predicates pushed down / Total number of predicates: {}/{}",
+                expressions.size(), conjuncts.size());
+        icebergPredicates = expressions;
     }
 
     @Override
