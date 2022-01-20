@@ -22,6 +22,7 @@ import org.apache.iceberg.expressions.Expression;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.iceberg.expressions.Expressions.and;
 import static org.apache.iceberg.expressions.Expressions.equal;
 import static org.apache.iceberg.expressions.Expressions.greaterThan;
 import static org.apache.iceberg.expressions.Expressions.greaterThanOrEqual;
@@ -29,6 +30,7 @@ import static org.apache.iceberg.expressions.Expressions.in;
 import static org.apache.iceberg.expressions.Expressions.isNull;
 import static org.apache.iceberg.expressions.Expressions.lessThan;
 import static org.apache.iceberg.expressions.Expressions.lessThanOrEqual;
+import static org.apache.iceberg.expressions.Expressions.not;
 import static org.apache.iceberg.expressions.Expressions.notEqual;
 import static org.apache.iceberg.expressions.Expressions.notIn;
 import static org.apache.iceberg.expressions.Expressions.notNull;
@@ -44,10 +46,18 @@ public class ExpressionConverter {
 
         if (expr instanceof CompoundPredicate) {
             CompoundPredicate compoundPredicate = (CompoundPredicate) expr;
-            Expression left = toIcebergExpression(compoundPredicate.getChild(0));
-            Expression right = toIcebergExpression(compoundPredicate.getChild(1));
-            if (left != null && right != null) {
-                return or(left, right);
+            CompoundPredicate.Operator op = compoundPredicate.getOp();
+            if (op == CompoundPredicate.Operator.NOT) {
+                Expression expression = toIcebergExpression(compoundPredicate.getChild(0));
+                if (expression != null) {
+                    return not(expression);
+                }
+            } else {
+                Expression left = toIcebergExpression(compoundPredicate.getChild(0));
+                Expression right = toIcebergExpression(compoundPredicate.getChild(1));
+                if (left != null && right != null) {
+                    return (op == CompoundPredicate.Operator.OR) ? or(left, right) : and(left, right);
+                }
             }
             return null;
         }
