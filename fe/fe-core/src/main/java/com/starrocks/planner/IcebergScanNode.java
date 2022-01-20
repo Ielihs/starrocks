@@ -93,6 +93,7 @@ public class IcebergScanNode extends ScanNode {
     private void preProcessConjuncts() {
         List<Expression> expressions = new ArrayList<>(conjuncts.size());
         for (Expr expr : conjuncts) {
+            LOG.info("#### conjunct: {} # {}", expr.getClass().getSimpleName(), expr.toSql());
             Expression filterExpr = toIcebergExpression(expr);
             if (filterExpr != null) {
                 try {
@@ -103,7 +104,7 @@ public class IcebergScanNode extends ScanNode {
                 }
             }
         }
-        LOG.debug("Number of predicates pushed down / Total number of predicates: {}/{}",
+        LOG.info("#### Number of predicates pushed down / Total number of predicates: {}/{}",
                 expressions.size(), conjuncts.size());
         icebergPredicates = expressions;
     }
@@ -169,6 +170,7 @@ public class IcebergScanNode extends ScanNode {
 
             result.add(scanRangeLocations);
         }
+        LOG.info("#### Scan files: {}", result.size());
     }
 
     @Override
