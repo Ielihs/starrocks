@@ -444,6 +444,9 @@ public class Config extends ConfigBase {
     @ConfField
     public static String frontend_address = "0.0.0.0";
 
+    @ConfField
+    public static String frontend_subdomain = "";
+
     /**
      * Declare a selection strategy for those servers have many ips.
      * Note that there should at most one ip match this list.

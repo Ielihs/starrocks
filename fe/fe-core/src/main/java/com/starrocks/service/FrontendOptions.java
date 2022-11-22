@@ -256,7 +256,7 @@ public class FrontendOptions {
 
     public static String getLocalHostAddress() {
         if (useFqdn) {
-            return localAddr.getCanonicalHostName();
+            return localAddr.getCanonicalHostName() + Config.frontend_subdomain;
         }
         return localAddr.getHostAddress();
     }
