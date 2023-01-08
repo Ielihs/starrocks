@@ -1735,7 +1735,8 @@ public class Auth implements Writable {
                     for (PrivEntry privEntry : mapEntry.getValue()) {
                         if (!privEntry.isSetByDomainResolver) {
                             // emr product restrictions
-                            if (mapEntry.getKey().getQualifiedUser().equals(Auth.ROOT_USER)) {
+                            if (Config.enable_emr_product_restrictions
+                                    && mapEntry.getKey().getQualifiedUser().equals(Auth.ROOT_USER)) {
                                 break;
                             }
                             userIdents.add(mapEntry.getKey());

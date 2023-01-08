@@ -25,6 +25,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.starrocks.catalog.AccessPrivilege;
 import com.starrocks.common.AnalysisException;
+import com.starrocks.common.Config;
 import com.starrocks.common.ErrorCode;
 import com.starrocks.common.ErrorReport;
 import com.starrocks.common.FeNameFormat;
@@ -168,7 +169,7 @@ public class GrantStmt extends DdlStmt {
         }
 
         // emr product restrictions
-        if (privileges.contains(Privilege.GRANT_PRIV)) {
+        if (Config.enable_emr_product_restrictions && privileges.contains(Privilege.GRANT_PRIV)) {
             throw new AnalysisException(
                 "GRANT_PRIV privilege can not be granted, only super administrators have GRANT_PRIV privilege.");
         }
@@ -215,7 +216,7 @@ public class GrantStmt extends DdlStmt {
         }
 
         // emr product restrictions
-        if (privileges.contains(Privilege.GRANT_PRIV)) {
+        if (Config.enable_emr_product_restrictions && privileges.contains(Privilege.GRANT_PRIV)) {
             throw new AnalysisException(
                 "GRANT_PRIV privilege can not be granted, only super administrators have GRANT_PRIV privilege.");
         }
