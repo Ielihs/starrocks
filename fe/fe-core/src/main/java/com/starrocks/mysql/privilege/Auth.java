@@ -1734,6 +1734,10 @@ public class Auth implements Writable {
                 for (Map.Entry<UserIdentity, List<PrivEntry>> mapEntry : table.map.entrySet()) {
                     for (PrivEntry privEntry : mapEntry.getValue()) {
                         if (!privEntry.isSetByDomainResolver) {
+                            // emr product restrictions
+                            if (mapEntry.getKey().getQualifiedUser().equals(Auth.ROOT_USER)) {
+                                break;
+                            }
                             userIdents.add(mapEntry.getKey());
                             break;
                         }
