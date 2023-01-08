@@ -18,6 +18,7 @@ import com.starrocks.catalog.Replica;
 import com.starrocks.common.AnalysisException;
 import com.starrocks.common.ErrorCode;
 import com.starrocks.common.ErrorReport;
+import com.starrocks.mysql.privilege.Auth;
 import com.starrocks.qe.ConnectContext;
 import com.starrocks.sql.ast.AstVisitor;
 
@@ -143,6 +144,11 @@ public class AdminStmtAnalyzer {
             }
             if (stmt.getType() != AdminSetConfigStmt.ConfigType.FRONTEND) {
                 throw new SemanticException("Only support setting Frontend configs now");
+            }
+            // emr product restrictions
+            if (session.getCurrentUserIdentity() != null
+                    && !session.getCurrentUserIdentity().getQualifiedUser().equals(Auth.ROOT_USER)) {
+                throw new SemanticException("Only support setting in EMR StarRocks Manager");
             }
             return null;
         }
