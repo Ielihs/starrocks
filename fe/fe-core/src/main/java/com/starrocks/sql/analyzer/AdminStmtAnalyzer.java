@@ -13,6 +13,7 @@ import com.starrocks.analysis.PartitionNames;
 import com.starrocks.analysis.SlotRef;
 import com.starrocks.analysis.StatementBase;
 import com.starrocks.analysis.StringLiteral;
+import com.starrocks.analysis.UserIdentity;
 import com.starrocks.catalog.CatalogUtils;
 import com.starrocks.catalog.Replica;
 import com.starrocks.common.AnalysisException;
@@ -143,6 +144,9 @@ public class AdminStmtAnalyzer {
             }
             if (stmt.getType() != AdminSetConfigStmt.ConfigType.FRONTEND) {
                 throw new SemanticException("Only support setting Frontend configs now");
+            }
+            if (!session.getUserIdentity().equals(UserIdentity.ROOT)) {
+                throw new SemanticException("Only support setting in EMR StarRocks Manager");
             }
             return null;
         }
