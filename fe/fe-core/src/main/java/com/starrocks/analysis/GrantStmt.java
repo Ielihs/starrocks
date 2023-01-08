@@ -167,6 +167,12 @@ public class GrantStmt extends DdlStmt {
             throw new AnalysisException("ADMIN_PRIV privilege can only be granted on *.*");
         }
 
+        // emr product restrictions
+        if (privileges.contains(Privilege.GRANT_PRIV)) {
+            throw new AnalysisException(
+                "GRANT_PRIV privilege can not be granted, only super administrators have GRANT_PRIV privilege.");
+        }
+
         if (role != null) {
             // Rule 3 and 4
             if (!GlobalStateMgr.getCurrentState().getAuth()
@@ -206,6 +212,12 @@ public class GrantStmt extends DdlStmt {
         // Rule 2
         if (resourcePattern.getPrivLevel() != PrivLevel.GLOBAL && privileges.contains(Privilege.ADMIN_PRIV)) {
             throw new AnalysisException("ADMIN_PRIV privilege can only be granted on resource *");
+        }
+
+        // emr product restrictions
+        if (privileges.contains(Privilege.GRANT_PRIV)) {
+            throw new AnalysisException(
+                "GRANT_PRIV privilege can not be granted, only super administrators have GRANT_PRIV privilege.");
         }
 
         if (role != null) {
