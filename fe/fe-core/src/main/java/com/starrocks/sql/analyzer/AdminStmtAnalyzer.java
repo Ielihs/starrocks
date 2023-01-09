@@ -150,7 +150,8 @@ public class AdminStmtAnalyzer {
             if (Config.enable_emr_product_restrictions
                     && session.getCurrentUserIdentity() != null
                     && !session.getCurrentUserIdentity().getQualifiedUser().equals(Auth.ROOT_USER)) {
-                throw new SemanticException("Only support setting in EMR StarRocks Manager");
+                throw new SemanticException(
+                    "EMR Serverless StarRocks policies: only support setting configs in EMR StarRocks Console.");
             }
             return null;
         }

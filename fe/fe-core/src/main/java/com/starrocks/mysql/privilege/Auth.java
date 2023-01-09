@@ -1734,11 +1734,6 @@ public class Auth implements Writable {
                 for (Map.Entry<UserIdentity, List<PrivEntry>> mapEntry : table.map.entrySet()) {
                     for (PrivEntry privEntry : mapEntry.getValue()) {
                         if (!privEntry.isSetByDomainResolver) {
-                            // emr product restrictions
-                            if (Config.enable_emr_product_restrictions
-                                    && mapEntry.getKey().getQualifiedUser().equals(Auth.ROOT_USER)) {
-                                break;
-                            }
                             userIdents.add(mapEntry.getKey());
                             break;
                         }
@@ -1746,6 +1741,16 @@ public class Auth implements Writable {
                 } // for userIdentity, privEntryList in table map
             }
         } // for table in all tables
+
+        // emr product restrictions
+        if (Config.enable_emr_product_restrictions) {
+            for (UserIdentity userIdent : userIdents) {
+                if (userIdent.getQualifiedUser().equals(Auth.ROOT_USER)) {
+                    userIdents.remove(userIdent);
+                    break;
+                }
+            }
+        }
 
         return userIdents;
     }

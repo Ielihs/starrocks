@@ -171,7 +171,8 @@ public class GrantStmt extends DdlStmt {
         // emr product restrictions
         if (Config.enable_emr_product_restrictions && privileges.contains(Privilege.GRANT_PRIV)) {
             throw new AnalysisException(
-                "GRANT_PRIV privilege can not be granted, only super administrators have GRANT_PRIV privilege.");
+                "EMR Serverless StarRocks policies: never grant ‘GRANT_PRIV’ privileges," +
+                    " instead you should update privileges in EMR StarRocks Manager.");
         }
 
         if (role != null) {
@@ -218,7 +219,8 @@ public class GrantStmt extends DdlStmt {
         // emr product restrictions
         if (Config.enable_emr_product_restrictions && privileges.contains(Privilege.GRANT_PRIV)) {
             throw new AnalysisException(
-                "GRANT_PRIV privilege can not be granted, only super administrators have GRANT_PRIV privilege.");
+                "EMR Serverless StarRocks policies: never grant ‘GRANT_PRIV’ privileges," +
+                    " instead you should update privileges in EMR StarRocks Manager.");
         }
 
         if (role != null) {
