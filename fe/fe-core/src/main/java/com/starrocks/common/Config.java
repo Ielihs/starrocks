@@ -1900,4 +1900,7 @@ public class Config extends ConfigBase {
      **/
     @ConfField(mutable = true)
     public static boolean enable_auto_tablet_distribution = false;
+
+    @ConfField(mutable = true)
+    public static boolean enable_emr_product_restrictions = false;
 }
